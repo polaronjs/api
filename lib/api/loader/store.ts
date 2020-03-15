@@ -51,7 +51,7 @@ export class ComponentStore {
         new (value as ThrustrComponentRef)(ThrustrCore.resolve())
       );
       console.log(
-          chalk.green('[Component Hyrdated]:'),
+          chalk.green('[Component Hydrated]:'),
           chalk.yellow(`\`${(value as ThrustrComponentRef).name}\` as '${key}'`)
       );
     });
