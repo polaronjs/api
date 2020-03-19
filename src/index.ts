@@ -1,4 +1,4 @@
-import thrustr, { register } from '../lib';
+import thrustr from '../lib';
 
 // start thrustr
 thrustr();

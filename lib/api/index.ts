@@ -39,9 +39,8 @@ router.get('/', (_, res) => {
 // configure cors
 app.use(cors({ origin: '*' }));
 
-// load standard components
-import './components'
-
+// load standard API components
+import './components';
 
 // exports
 export const start = (callback?: () => void) => {  
