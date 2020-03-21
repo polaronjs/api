@@ -1,11 +1,14 @@
-import * as chalk from 'chalk';
-
 import { start } from './api';
-import { hydrate } from './api/loader';
 import { ThrustrCore as core } from './api/core';
 
 // component loader
-export { register } from './api/loader';
+import { ComponentLayer } from './api/components';
+
+// system messages
+import { STARTING, READY } from './api/messages';
+
+// export function hook to register components without exporting entire ComponentLayer
+export const registerComponent = ComponentLayer.register;
 
 // component helpers
 export { Route } from './api/decorators/route';
@@ -16,10 +19,19 @@ export { Component } from './api/decorators/component';
 export type ThrustrCore = core;
 
 // core config
-export const { config } = core.resolve();
+export const { config } = core.resolveInstance();
 
 export default (callback?: () => void) => {
-  console.log(chalk.yellow('Starting Thrustr...'));
-  hydrate();
-  start(callback);
+  STARTING();
+
+  // hydrate component layer
+  ComponentLayer.hydrate();
+
+  start(() => {
+    READY();
+
+    if (callback) {
+      callback();
+    }
+  });
 };

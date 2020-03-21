@@ -3,7 +3,7 @@ import { Route } from '../../decorators/route';
 import { StatusCode } from '../../decorators/status';
 import { ThrustrCore } from '../../../api/core';
 
-@Component('users')
+@Component
 export class Users {
 
   constructor({ router }: ThrustrCore) {

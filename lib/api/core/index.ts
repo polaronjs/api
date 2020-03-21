@@ -11,7 +11,7 @@ export class ThrustrCore {
 
   private constructor() { }
 
-  public static resolve() {
+  public static resolveInstance() {
     if (!this.instance) {
       this.instance = new ThrustrCore();
     }

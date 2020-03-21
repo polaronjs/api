@@ -1,13 +1,14 @@
 // TODO websockets?
 // TODO config?
 
-import * as chalk from 'chalk';
-
 // express
 import * as express from 'express';
 import * as bodyParser from 'body-parser';
 import * as dotenv from 'dotenv';
 import * as cors from 'cors';
+
+// system messages
+import { INTERFACE_AVAILABLE } from './messages';
 
 // load variables from environment file
 dotenv.config();
@@ -19,7 +20,7 @@ const app = express();
 const router = express.Router();
 
 // register the router with thrustr core
-core.resolve().router = router;
+core.resolveInstance().router = router;
 
 // use body parser
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -47,7 +48,7 @@ import './components'
 export const start = (callback?: () => void) => {  
   // TODO add default port
   app.listen(process.env.PORT, () => {
-    console.log(chalk.green(`Thrustr HTTP Interface listening on port ${process.env.PORT}`));
+    INTERFACE_AVAILABLE(`HTTP on PORT ${process.env.PORT}`);
 
     if (callback) {
       callback();
