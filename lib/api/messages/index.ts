@@ -15,16 +15,16 @@ export const STARTING = () => {
   console.log(colors.PRIMARY('Starting Thrustr...'));
 }
 
-export const COMPONENT_HYDRATED = (token: string) => {
-  console.log(colors.PRIMARY('[Component Hydrated]: '), colors.SECONDARY(token))
+export const INJECTABLE_HYDRATED = (token: string) => {
+  console.log(colors.PRIMARY('[Injectable Hydrated]: '), colors.SECONDARY(token))
 }
 
 export const DATASOURCE_CONNECTED = (source: string) => {
   console.log(colors.PRIMARY('[Datasource Connection Established]: '), colors.SECONDARY(source))
 }
 
-export const INTERFACE_AVAILABLE = (identifier: string) => {
-  console.log(colors.PRIMARY('[Interface Available]: '), colors.SECONDARY(identifier))
+export const INTERFACE_AVAILABLE = (identifier: string, port?: string) => {
+  console.log(colors.PRIMARY(`${identifier} Interface available` + (port ? ` on port ${port}`: '')));
 }
 
 export const READY = () => {

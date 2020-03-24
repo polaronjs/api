@@ -1,31 +1,31 @@
-import { start } from './api';
-import { ThrustrCore as core } from './api/core';
+import 'reflect-metadata';
 
-// component loader
-import { ComponentLayer } from './api/components';
+import { Injector } from './api/injector';
+
+import { start } from './api';
+import { ThrustrCore } from './api/core';
 
 // system messages
 import { STARTING, READY } from './api/messages';
 
-// export function hook to register components without exporting entire ComponentLayer
-export const registerComponent = ComponentLayer.register;
-
-// component helpers
-export { Route } from './api/decorators/route';
-export { StatusCode } from './api/decorators/status';
-export { Component } from './api/decorators/component';
+// http helpers
+export { Route } from './api/http/route';
+export { StatusCode } from './api/http/status';
 
 // export type of ThrustrCore, not actual class
-export type ThrustrCore = core;
+export { ThrustrCore as Core } from './api/core';
 
 // core config
-export const { config } = core.resolveInstance();
+export const { config } = Injector.resolve(ThrustrCore);
+
+// injector exports
+export { Injectable, inject } from './api/injector';
 
 export default (callback?: () => void) => {
   STARTING();
 
   // hydrate component layer
-  ComponentLayer.hydrate();
+  Injector.hydrate();
 
   start(() => {
     READY();

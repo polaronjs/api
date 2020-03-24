@@ -1,24 +1,15 @@
+// TODO websockets?
+// TODO config?
+
 import { Router } from 'express';
 import * as WebSocket from 'ws';
+import { Injectable } from '../injector';
 
+@Injectable({ immediate: true })
 export class ThrustrCore {
-  private _router: Router;
+  private _router = Router();
   private _ws: (ws: WebSocket) => void;
   private _config: any;
-
-
-  private static instance: ThrustrCore;
-
-  private constructor() { }
-
-  public static resolveInstance() {
-    if (!this.instance) {
-      this.instance = new ThrustrCore();
-    }
-
-    return this.instance;
-  }
-
 
   get router() {
     return this._router;

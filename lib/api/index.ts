@@ -1,6 +1,3 @@
-// TODO websockets?
-// TODO config?
-
 // express
 import * as express from 'express';
 import * as bodyParser from 'body-parser';
@@ -14,13 +11,14 @@ import { INTERFACE_AVAILABLE } from './messages';
 dotenv.config();
 
 // core
-import { ThrustrCore as core } from './core';
+import { ThrustrCore } from './core';
+
+// injector
+import { Injector } from './injector';
 
 const app = express();
-const router = express.Router();
+const router = Injector.resolve<ThrustrCore>(ThrustrCore).router;
 
-// register the router with thrustr core
-core.resolveInstance().router = router;
 
 // use body parser
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -41,14 +39,13 @@ router.get('/', (_, res) => {
 app.use(cors({ origin: '*' }));
 
 // load standard components
-import './components'
-
+import './components/users'
 
 // exports
 export const start = (callback?: () => void) => {  
   // TODO add default port
   app.listen(process.env.PORT, () => {
-    INTERFACE_AVAILABLE(`HTTP on PORT ${process.env.PORT}`);
+    INTERFACE_AVAILABLE('HTTP', process.env.PORT);
 
     if (callback) {
       callback();
