@@ -74,7 +74,7 @@ export abstract class Repository<T> {
   }
 
   async update(id: string, updates: any): Promise<T> {
-    // TODO can this be made more efficient
+    // TODO can this be made more efficient?
     await this.model.findByIdAndUpdate(id, updates).lean<T>().exec();
     return this.findOne(id);
   }
