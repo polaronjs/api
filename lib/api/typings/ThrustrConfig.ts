@@ -1,1 +1,1 @@
-export interface ThrustrConfig { }
+export interface ThrustrConfig {}

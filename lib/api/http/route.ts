@@ -3,9 +3,11 @@ import { Request, Response, NextFunction } from 'express';
 export function Route(...bindings: string[]) {
   return function (target, name, descriptor) {
     const original = descriptor.value;
-  
+
     if (typeof original === 'function') {
-      descriptor.value = async function (...args: [ Request, Response, NextFunction ]) {
+      descriptor.value = async function (
+        ...args: [Request, Response, NextFunction]
+      ) {
         const [req, res, next] = args;
 
         if (req && req.path && res && res.send) {
@@ -29,7 +31,10 @@ export function Route(...bindings: string[]) {
               }
             }
 
-            const result = await original.apply(this, [...translatedArgs, true]);
+            const result = await original.apply(this, [
+              ...translatedArgs,
+              true,
+            ]);
             const { status, payload } = result;
 
             if (status || payload) {
@@ -37,7 +42,6 @@ export function Route(...bindings: string[]) {
             } else {
               res.send(result);
             }
-
           } catch (error) {
             next(error);
           }
@@ -50,9 +54,9 @@ export function Route(...bindings: string[]) {
 
           return result;
         }
-      }
+      };
     }
-  
+
     return descriptor;
-  }
+  };
 }

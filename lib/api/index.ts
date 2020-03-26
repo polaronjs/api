@@ -19,7 +19,6 @@ import { Injector } from './injector';
 const app = express();
 const router = Injector.resolve<ThrustrCore>(ThrustrCore).router;
 
-
 // use body parser
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
@@ -32,17 +31,17 @@ app.use(`/${process.env.API_PREFIX}`, router);
 
 // define Thrustr default welcome message
 router.get('/', (_, res) => {
-  res.send(`Welcome to the Thrustr API for ${process.env.SITE_NAME}!`)
+  res.send(`Welcome to the Thrustr API for ${process.env.SITE_NAME}!`);
 });
 
 // configure cors
 app.use(cors({ origin: '*' }));
 
 // load standard components
-import './components/users'
+import './components';
 
 // exports
-export const start = (callback?: () => void) => {  
+export const start = (callback?: () => void) => {
   // TODO add default port
   app.listen(process.env.PORT, () => {
     INTERFACE_AVAILABLE('HTTP', process.env.PORT);
@@ -50,5 +49,5 @@ export const start = (callback?: () => void) => {
     if (callback) {
       callback();
     }
-  })
-}
+  });
+};

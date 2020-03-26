@@ -5,10 +5,10 @@ export interface Query {
     sort?: {
       property: string;
       direction: 1 | -1;
-    },
+    };
     paginate: {
       limit?: number;
       offset?: number;
-    }
-  }
+    };
+  };
 }

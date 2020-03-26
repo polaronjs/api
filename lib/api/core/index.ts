@@ -19,7 +19,6 @@ export class ThrustrCore {
     this._router = router;
   }
 
-
   get ws() {
     return this._ws;
   }
@@ -27,7 +26,6 @@ export class ThrustrCore {
   set ws(ws: (ws: WebSocket) => void) {
     this._ws = ws;
   }
-
 
   get config() {
     return this._config;

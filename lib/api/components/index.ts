@@ -1,1 +1,3 @@
-export { UsersComponent } from './users';
+import './users';
+import './articles';
+import './categories';
