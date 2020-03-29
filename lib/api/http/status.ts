@@ -9,7 +9,6 @@ export function StatusCode(status: number) {
         if (typeof isExpress === 'boolean' && isExpress) {
           // this was forwarded from express, handle route
           const result = await original.apply(this, args);
-          console.log('returning', { status, payload: result });
           return { status, payload: result };
         } else {
           // function was called directly, ignore express overhead

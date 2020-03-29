@@ -2,6 +2,7 @@ import { prop, Ref, getModelForClass } from '@typegoose/typegoose';
 import { User } from './user';
 import { Model } from '..';
 
+// TODO make database agnostic
 export class Entity {
   _id: any;
 
