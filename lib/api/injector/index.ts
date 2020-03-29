@@ -18,7 +18,11 @@ export class Injector {
    */
   static register(
     token: Injectable<any>,
-    config?: { force?: boolean; immediate?: boolean; useValue?: any }
+    config?: {
+      force?: boolean;
+      useClass?: new (...args: any[]) => any;
+      useValue?: any;
+    }
   ) {
     if (!this.instance) {
       this.instance = new Injector();
@@ -27,7 +31,7 @@ export class Injector {
     if (config && config.useValue) {
       // never hydrate and simply use the provided value
       this.instance.injectables.set(token, config.useValue);
-    } else if (config && config.immediate) {
+    } else {
       // perform hydration of this Injectable now
       if (this.instance.injectables.has(token)) {
         throw new Error(
@@ -36,15 +40,6 @@ export class Injector {
       }
 
       this.hydrateToken(token);
-    } else {
-      if (this.instance.tokens.has(token)) {
-        throw new Error(
-          `Cannot register token \`${token.name}\` with Injector: token exists. Try using the 'force' option.`
-        );
-      }
-
-      // defer hydration to hydration step
-      this.instance.tokens.add(token);
     }
   }
 
@@ -58,23 +53,6 @@ export class Injector {
     }
 
     return this.instance.injectables.get(token);
-  }
-
-  /**
-   * Create and store instances of all tokens not already provided
-   */
-  static hydrate() {
-    if (this.instance.hydrated) {
-      throw new Error('Cannot hydrate injector: already hydrated');
-    }
-
-    if (!this.instance.tokens.size) {
-      throw new Error('Cannot hydrate injector: injector empty');
-    }
-
-    for (const token of this.instance.tokens) {
-      this.hydrateToken(token);
-    }
   }
 
   /**

@@ -31,7 +31,7 @@ export default async (callback?: () => void) => {
   await connect();
 
   // hydrate component layer
-  Injector.hydrate();
+  // Injector.hydrate();
 
   start(() => {
     READY();

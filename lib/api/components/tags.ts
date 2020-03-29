@@ -39,7 +39,7 @@ export class TagsComponent {
     return this.repo.update(id, updates);
   }
 
-  @Route('params.id') s;
+  @Route('params.id')
   deleteTag(id: string) {
     return this.repo.delete(id);
   }
