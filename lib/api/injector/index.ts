@@ -5,8 +5,6 @@ export type Injectable<T> = new (...args: any[]) => T;
 export class Injector {
   private static instance: Injector;
 
-  private hydrated: boolean;
-  private tokens = new Set<Injectable<any>>();
   private injectables = new Map<Injectable<any>, any>();
 
   private constructor() {}

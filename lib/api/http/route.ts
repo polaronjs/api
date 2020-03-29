@@ -1,60 +1,58 @@
 import { Request, Response, NextFunction } from 'express';
+import { Injector, Injectable } from '../injector';
+import { ThrustrCore } from '../core';
+import { UsersComponent } from '../components/users';
 
-export function Route(...bindings: string[]) {
-  return function (target, name, descriptor) {
+export enum HttpMethod {
+  GET = 'get',
+  POST = 'post',
+  PUT = 'put',
+  PATCH = 'patch',
+  DELETE = 'delete',
+  HEAD = 'head',
+  OPTIONS = 'options',
+}
+
+export function Route({
+  method = HttpMethod.GET,
+  route,
+}: {
+  method: HttpMethod;
+  route: string;
+}) {
+  return function (target, functionName: string, descriptor) {
     const original = descriptor.value;
 
     if (typeof original === 'function') {
-      descriptor.value = async function (
-        ...args: [Request, Response, NextFunction]
-      ) {
+      descriptor.value = async function (...args: any[]) {
         const [req, res, next] = args;
 
         if (req && req.path && res && res.send) {
-          // this was forwarded from express, handle route
+          // this was forwarded from express, create bundle of express objects and pass to next decorator in chain
+          const expressBundle = { req, res, next };
+
           try {
-            const translatedArgs = [];
-
-            for (const binding of bindings) {
-              if (binding === 'parsedQuery') {
-                translatedArgs.push(req['parsedQuery']);
-              } else {
-                const path = binding.split('.');
-                let valueAtPath = req;
-
-                while (path.length) {
-                  valueAtPath = valueAtPath[path[0]];
-                  path.shift();
-                }
-
-                translatedArgs.push(valueAtPath);
-              }
-            }
-
-            const result = await original.apply(this, [
-              ...translatedArgs,
-              true,
-            ]);
-            const { status, payload } = result;
-
-            if (status || payload) {
-              res.status(status || 200).send(payload || {});
-            } else {
-              res.send(result);
-            }
+            // handle express functionality
+            res.send(
+              await original
+                // we bind the original function to the instance of `target` from the Injector store for the `this` context
+                .bind(Injector.resolve(target.constructor))
+                .apply(this, [...args, expressBundle])
+            );
           } catch (error) {
             next(error);
           }
         } else {
-          // function was called directly, ignore express overhead
-          const result = await original.apply(this, [...args, false]);
-          if (result && result.status && result.payload) {
-            return result.payload;
-          }
-
-          return result;
+          // function was called directly, ignore express overhead and pass `false` for expressBundle
+          return original.apply(this, [...args, false]);
         }
       };
+
+      // inject the ThrustrCore to get the instance of Router
+      const { router } = Injector.resolve(ThrustrCore);
+
+      // map the new function to the given route/method combination
+      router[method](route, descriptor.value);
     }
 
     return descriptor;

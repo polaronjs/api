@@ -1,45 +1,39 @@
 import { Injectable } from '../injector';
 import { CategoryRepository, Category } from '../data/entities/category';
-import { ThrustrCore } from '../core';
-import { Route, StatusCode } from '../http';
+import { Route, StatusCode, Params } from '../http';
+import { HttpMethod } from '../http/route';
 
 @Injectable()
 export class CategoriesComponent {
-  constructor({ router }: ThrustrCore, private repo: CategoryRepository) {
-    router
-      .route('/categories')
-      .get(this.getCategories.bind(this))
-      .post(this.createCategory.bind(this));
+  constructor(private repo: CategoryRepository) {}
 
-    router
-      .route('/categories/:id')
-      .get(this.getCategory.bind(this))
-      .patch(this.updateCategories.bind(this))
-      .delete(this.deleteCategory.bind(this));
-  }
-
-  @Route('body.category')
+  @Route({ method: HttpMethod.POST, route: '/categories' })
+  @Params('body.category')
   @StatusCode(201)
   createCategory(category: Partial<Category>) {
     return this.repo.create(category);
   }
 
-  @Route('params.id')
+  @Route({ method: HttpMethod.GET, route: '/categories/:id' })
+  @Params('params.id')
   getCategory(id: string) {
     return this.repo.findOne(id);
   }
 
-  @Route('query')
+  @Route({ method: HttpMethod.GET, route: '/categories' })
+  @Params('query')
   getCategories(query?: any) {
     return this.repo.find({ query });
   }
 
-  @Route('params.id', 'body.updates')
+  @Route({ method: HttpMethod.PATCH, route: '/categories/:id' })
+  @Params('params.id', 'body.updates')
   updateCategories(id: string, updates: Partial<Category>) {
     return this.repo.update(id, updates);
   }
 
-  @Route('params.id')
+  @Route({ method: HttpMethod.GET, route: '/categories/:id' })
+  @Params('params.id')
   deleteCategory(id: string) {
     return this.repo.delete(id);
   }

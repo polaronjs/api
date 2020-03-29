@@ -1,45 +1,39 @@
 import { Injectable } from '../injector';
-import { ThrustrCore } from '../core';
-import { Route, StatusCode } from '../http';
+import { Route, StatusCode, Params } from '../http';
 import { ArticleRepository, Article } from '../data/entities/article';
+import { HttpMethod } from '../http/route';
 
 @Injectable()
 export class ArticlesComponent {
-  constructor({ router }: ThrustrCore, private repo: ArticleRepository) {
-    router
-      .route('/articles/:id')
-      .get(this.getArticle.bind(this))
-      .patch(this.updateArticle.bind(this))
-      .delete(this.deleteArticle.bind(this));
+  constructor(private repo: ArticleRepository) {}
 
-    router
-      .route('/articles')
-      .post(this.createArticle.bind(this))
-      .get(this.getArticles.bind(this));
-  }
-
-  @Route('body.article')
+  @Route({ method: HttpMethod.POST, route: '/articles' })
+  @Params('body.article')
   @StatusCode(201)
   createArticle(article: Partial<Article>): Promise<Article> {
     return this.repo.create(article);
   }
 
-  @Route('params.id')
+  @Route({ method: HttpMethod.GET, route: '/articles/:id' })
+  @Params('params.id')
   getArticle(id: string): Promise<Article> {
     return this.repo.findOne(id);
   }
 
-  @Route('query')
+  @Route({ method: HttpMethod.GET, route: '/articles' })
+  @Params('query')
   getArticles(query: any): Promise<Article[]> {
     return this.repo.find(query);
   }
 
-  @Route('params.id', 'body.updates')
+  @Route({ method: HttpMethod.PATCH, route: '/articles/:id' })
+  @Params('params.id', 'body.updates')
   updateArticle(id: string, updates: Partial<Article>): Promise<Article> {
     return this.repo.update(id, updates);
   }
 
-  @Route('params.id')
+  @Route({ method: HttpMethod.GET, route: '/artices/:id' })
+  @Params('params.id')
   deleteArticle(id: string): Promise<Article> {
     return this.repo.delete(id);
   }
