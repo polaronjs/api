@@ -3,7 +3,7 @@ import { Injectable } from 'lib/api/injector';
 import { prop } from '@typegoose/typegoose';
 import { FileEntity } from './file';
 
-export class UploadEntity extends FileEntity {
+export class Upload extends FileEntity {
   @prop({ required: true })
   totalParts: number;
 
@@ -15,8 +15,8 @@ export class UploadEntity extends FileEntity {
 }
 
 @Injectable()
-export class UploadRepository extends Repository<UploadEntity> {
+export class UploadRepository extends Repository<Upload> {
   constructor() {
-    super(UploadEntity);
+    super(Upload);
   }
 }
