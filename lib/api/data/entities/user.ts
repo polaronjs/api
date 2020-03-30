@@ -2,6 +2,13 @@ import { prop } from '@typegoose/typegoose';
 import { Entity, Repository } from '.';
 import { Injectable } from '../../injector';
 
+export enum AccessLevel {
+  USER,
+  EDITOR,
+  ADMIN,
+  SUPER,
+}
+
 export class User extends Entity {
   @prop({ required: true, unique: true })
   username: string;
@@ -14,6 +21,9 @@ export class User extends Entity {
 
   @prop({ required: true, unique: true })
   email: string;
+
+  @prop({ required: true, default: AccessLevel.USER })
+  accessLevel: AccessLevel;
 
   @prop()
   lastLogin?: Date;
