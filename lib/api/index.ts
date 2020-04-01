@@ -34,9 +34,6 @@ router.get('/', (_, res) => {
   res.send(`Welcome to the Thrustr API for ${process.env.SITE_NAME}!`);
 });
 
-// configure cors
-app.use(cors({ origin: '*' }));
-
 // load standard components
 import './components';
 

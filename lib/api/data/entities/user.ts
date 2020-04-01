@@ -3,10 +3,10 @@ import { Entity, Repository } from '.';
 import { Injectable } from '../../injector';
 
 export enum AccessLevel {
-  USER,
-  EDITOR,
-  ADMIN,
-  SUPER,
+  USER = 0,
+  EDITOR = 1,
+  ADMIN = 2,
+  SUPER = 3,
 }
 
 export class User extends Entity {
@@ -45,7 +45,11 @@ export class UserRepository extends Repository<User> {
     return this.find({ query, pagination: { limit: 1 } });
   }
 
-  findOneWithPassword(username: string): Promise<{ password: string }> {
-    return this.model.findOne({ username }).select('+password').lean().exec();
+  findOneWithPassword(username: string): Promise<User> {
+    return this.model
+      .findOne({ username })
+      .select('+password')
+      .lean<User>()
+      .exec();
   }
 }

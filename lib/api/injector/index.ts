@@ -15,11 +15,11 @@ export class Injector {
    * @param config
    */
   static register(
-    token: Injectable<any>,
+    token: Injectable<any> | any,
     config?: {
       force?: boolean;
-      useClass?: new (...args: any[]) => any;
       useValue?: any;
+      useClass?: Injectable<any>;
     }
   ) {
     if (!this.instance) {
@@ -29,9 +29,12 @@ export class Injector {
     if (config && config.useValue) {
       // never hydrate and simply use the provided value
       this.instance.injectables.set(token, config.useValue);
+    } else if (config && config.useClass) {
+      // perform hydration of the supplied class now
+      this.hydrateToken(token, config.useClass);
     } else {
       // perform hydration of this Injectable now
-      if (this.instance.injectables.has(token)) {
+      if (this.instance.injectables.has(token) && !config.force) {
         throw new Error(
           `Cannot register token \`${token.name}\` with Injector: token exists. Try using the 'force' option.`
         );
@@ -57,16 +60,22 @@ export class Injector {
    * Hydrate a provided token and store in the INjector
    * @param {Injectable<any>} token
    */
-  private static hydrateToken(token: Injectable<any>) {
-    const orderedDepdencies = resolveContructorDependencies(token);
+  private static hydrateToken(
+    token: Injectable<any> | any,
+    useClass?: Injectable<any>
+  ) {
+    const orderedDepdencies = resolveContructorDependencies(useClass || token);
 
     if (orderedDepdencies) {
       // this token relies on other injectable dependencies, provide them
 
-      this.instance.injectables.set(token, new token(...orderedDepdencies));
+      this.instance.injectables.set(
+        token,
+        new (useClass || token)(...orderedDepdencies)
+      );
     } else {
       // this token doesn't rely on other injectable dependencies, simply call the constructor
-      this.instance.injectables.set(token, new token());
+      this.instance.injectables.set(token, new (useClass || token)());
     }
 
     INJECTABLE_HYDRATED(token.name);
@@ -109,7 +118,9 @@ function resolveContructorDependencies(token: Injectable<any>) {
       if (dependency) {
         orderedDepdencies.push(dependency);
       } else {
-        throw new Error(`Cannot resolve dependency \`${token.name}\``);
+        throw new Error(
+          `Error resolving dependencies for ${token.name}: cannot resolve dependency '${dependency}'`
+        );
       }
     });
 

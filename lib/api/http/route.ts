@@ -1,7 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
-import { Injector, Injectable } from '../injector';
+import { Injector } from '../injector';
 import { ThrustrCore } from '../core';
-import { UsersComponent } from '../components/users';
 
 export enum HttpMethod {
   GET = 'get',
@@ -24,8 +23,10 @@ export function Route({
     const original = descriptor.value;
 
     if (typeof original === 'function') {
-      descriptor.value = async function (...args: any[]) {
-        const [req, res, next] = args;
+      descriptor.value = async function (
+        ...args: [Request, Response, NextFunction] | any[]
+      ) {
+        const [req, res, next] = args as [Request, Response, NextFunction];
 
         if (req && req.path && res && res.send) {
           // this was forwarded from express, create bundle of express objects and pass to next decorator in chain
