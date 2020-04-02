@@ -11,6 +11,9 @@ import { Tokenizer } from '../services/tokenizer';
 // entities
 import { UserRepository, User } from '../data/entities/user';
 
+// errors
+import { UnauthorizedError } from '../errors';
+
 @Injectable()
 export class AuthComponent {
   constructor(
@@ -26,7 +29,9 @@ export class AuthComponent {
 
     if (user && (await this.hasher.compare(password, user.password))) {
       // login successful, make a token and set the user's last login time
-      return this.tokenizer.sign<User>(user);
+      return this.tokenizer.sign<User>(user, { expiresIn: '24h' });
+    } else {
+      throw new UnauthorizedError();
     }
   }
 }

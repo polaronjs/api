@@ -16,6 +16,10 @@ import { ThrustrCore } from './core';
 // injector
 import { Injector } from './injector';
 
+// errors
+import { NotFoundError } from './errors';
+import { mapErrorToHttp } from './errors/http';
+
 const app = express();
 const router = Injector.resolve<ThrustrCore>(ThrustrCore).router;
 
@@ -34,8 +38,24 @@ router.get('/', (_, res) => {
   res.send(`Welcome to the Thrustr API for ${process.env.SITE_NAME}!`);
 });
 
+app.use('**', (req, res, next) => {
+  // catch all, throw a not found error and pass to default error handler
+  next(new NotFoundError());
+});
+
 // load standard components
 import './components';
+
+// default error handler
+app.use((err, req, res, next) => {
+  const { code, ...payload } = mapErrorToHttp(err);
+
+  if (payload.message) {
+    res.status(code).send(payload);
+  } else {
+    res.sendStatus(code);
+  }
+});
 
 // exports
 export const start = (callback?: () => void) => {

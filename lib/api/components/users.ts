@@ -9,6 +9,9 @@ import { HttpMethod } from '../http/route';
 // entities
 import { UserRepository, User } from '../data/entities/user';
 
+// errors
+import { BadRequestError } from '../errors';
+
 @Injectable()
 export class UsersComponent {
   constructor(
@@ -22,7 +25,9 @@ export class UsersComponent {
   @Params('body.user')
   async createUser(user: Partial<User>): Promise<User> {
     if (!user.password) {
-      throw new Error('Cannot create a user without a password');
+      throw new BadRequestError({
+        message: 'Cannot create a user without a password',
+      });
     }
 
     user.password = await this.hasher.hash(user.password);
