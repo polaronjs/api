@@ -50,6 +50,9 @@ export class UserRepository extends Repository<User> {
       .findOne({ username })
       .select('+password')
       .lean<User>()
-      .exec();
+      .exec()
+      .then((value) => {
+        return Entity.from<User>(value);
+      });
   }
 }

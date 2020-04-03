@@ -4,10 +4,25 @@ import { Model } from '..';
 
 // TODO make database agnostic
 export class Entity {
-  _id: any;
+  id: any;
 
-  get id() {
-    return this._id;
+  static from<T>(data: any): T {
+    const entity = new Entity();
+
+    if (data._id) {
+      entity.id = data._id;
+      delete data._id;
+    }
+
+    // delete the mongoose __version prop
+    delete data.__v;
+
+    // for all other properties, set them on the entity
+    for (let [key, value] of Object.entries(data)) {
+      entity[key] = value;
+    }
+
+    return (entity as unknown) as T;
   }
 }
 
@@ -41,7 +56,9 @@ export abstract class Repository<T> {
   }
 
   create(document: Partial<T>): Promise<T> {
-    return this.model.create(document);
+    return this.model.create(document).then((value) => {
+      return Entity.from<T>(value);
+    });
   }
 
   findOne(id: string): Promise<T> {
@@ -50,7 +67,10 @@ export abstract class Repository<T> {
       .populate('createdBy')
       .populate('updatedBy')
       .lean<T>()
-      .exec();
+      .exec()
+      .then((value) => {
+        return Entity.from<T>(value);
+      });
   }
 
   find(options?: RepositoryOptions<T>): Promise<T[]> {
@@ -71,16 +91,31 @@ export abstract class Repository<T> {
       request.sort({ [sorting.property]: sorting.direction || -1 });
     }
 
-    return request.populate('createdBy').populate('updatedBy').lean<T>().exec();
+    return request
+      .populate('createdBy')
+      .populate('updatedBy')
+      .lean<T>()
+      .exec()
+      .then((values) => {
+        return values.map((value) => Entity.from<T>(value));
+      });
   }
 
   async update(id: string, updates: any): Promise<T> {
     // TODO can this be made more efficient?
     await this.model.findByIdAndUpdate(id, updates).lean<T>().exec();
-    return this.findOne(id);
+    return this.findOne(id).then((value) => {
+      return Entity.from<T>(value);
+    });
   }
 
   delete(id: string): Promise<T> {
-    return this.model.findByIdAndDelete(id).lean<T>().exec();
+    return this.model
+      .findByIdAndDelete(id)
+      .lean<T>()
+      .exec()
+      .then((value) => {
+        return Entity.from<T>(value);
+      });
   }
 }

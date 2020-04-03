@@ -8,7 +8,11 @@ export abstract class Tokenizer {
 
 export class JWTDriver implements Tokenizer {
   sign(data: any, options?: { expiresIn: number | string }) {
-    return jwt.sign(data, process.env.SECRET, options || undefined);
+    return jwt.sign(
+      JSON.parse(JSON.stringify(data)),
+      process.env.SECRET,
+      options || undefined
+    );
   }
 
   decode(token: string) {
