@@ -34,12 +34,14 @@ export function Route({
 
           try {
             // handle express functionality
-            res.send(
-              await original
-                // we bind the original function to the instance of `target` from the Injector store for the `this` context
-                .bind(Injector.resolve(target.constructor))
-                .apply(this, [...args, expressBundle])
-            );
+            const result = await original
+              // we bind the original function to the instance of `target` from the Injector store for the `this` context
+              .bind(Injector.resolve(target.constructor))
+              .apply(this, [...args, expressBundle]);
+
+            res.send(result);
+
+            return result;
           } catch (error) {
             next(error);
           }

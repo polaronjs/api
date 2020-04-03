@@ -1,6 +1,5 @@
 import { Injectable } from '../injector';
 import { Hasher } from '../services';
-import { ThrustrCore } from '../core';
 
 // http
 import { Route, StatusCode, Params } from '../http';
@@ -11,14 +10,11 @@ import { UserRepository, User } from '../data/entities/user';
 
 // errors
 import { BadRequestError } from '../errors';
+import { onEvent } from '../events';
 
 @Injectable()
 export class UsersComponent {
-  constructor(
-    { router }: ThrustrCore,
-    public repo: UserRepository,
-    public hasher: Hasher
-  ) {}
+  constructor(public repo: UserRepository, public hasher: Hasher) {}
 
   @Route({ method: HttpMethod.POST, route: '/users' })
   @StatusCode(201)
@@ -49,6 +45,7 @@ export class UsersComponent {
 
   @Route({ method: HttpMethod.PATCH, route: '/users/:id' })
   @Params('params.id', 'body.updates')
+  @onEvent('USER_LOGIN')
   async updateUser(id: string, updates: Partial<User>): Promise<User> {
     if (updates.password) {
       updates.password = await this.hasher.hash(updates.password);

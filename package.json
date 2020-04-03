@@ -24,6 +24,7 @@
     "jsonwebtoken": "^8.5.1",
     "mongoose": "^5.9.6",
     "reflect-metadata": "^0.1.13",
+    "rxjs": "^6.5.4",
     "ws": "^7.2.3"
   },
   "devDependencies": {

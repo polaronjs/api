@@ -13,13 +13,15 @@ import { UserRepository, User } from '../data/entities/user';
 
 // errors
 import { UnauthorizedError } from '../errors';
+import { triggerEvent, EventBus } from '../events';
 
 @Injectable()
 export class AuthComponent {
   constructor(
     private repo: UserRepository,
     private hasher: Hasher,
-    private tokenizer: Tokenizer
+    private tokenizer: Tokenizer,
+    private events: EventBus
   ) {}
 
   @Route({ method: HttpMethod.POST, route: '/users/tokens' })
@@ -29,7 +31,13 @@ export class AuthComponent {
 
     if (user && (await this.hasher.compare(password, user.password))) {
       // login successful, make a token and set the user's last login time
-      return this.tokenizer.sign<User>(user, { expiresIn: '24h' });
+      this.events.emit('USER_LOGIN', {
+        updates: { id: user.id, lastLoginDate: new Date() },
+      });
+      return {
+        id: user,
+        token: this.tokenizer.sign<User>(user, { expiresIn: '24h' }),
+      };
     } else {
       throw new UnauthorizedError();
     }
