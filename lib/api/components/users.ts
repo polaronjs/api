@@ -45,7 +45,9 @@ export class UsersComponent {
 
   @Route({ method: HttpMethod.PATCH, route: '/users/:id' })
   @Params('params.id', 'body.updates')
-  @onEvent('USER_LOGIN')
+  @onEvent('USER_LOGIN', (payload) => {
+    return [payload.user._id, { lastLogin: new Date() }];
+  })
   async updateUser(id: string, updates: Partial<User>): Promise<User> {
     if (updates.password) {
       updates.password = await this.hasher.hash(updates.password);

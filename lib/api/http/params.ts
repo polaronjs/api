@@ -5,7 +5,7 @@ export function Params(...bindings: string[]) {
     const original = descriptor.value;
 
     if (typeof original === 'function') {
-      descriptor.value = async function (...args: any) {
+      descriptor.value = async function (...args: any[]) {
         const expressBundle: {
           req: Request;
           res: Response;
@@ -20,19 +20,15 @@ export function Params(...bindings: string[]) {
             const translatedArgs = [];
 
             for (const binding of bindings) {
-              if (binding === 'parsedQuery') {
-                translatedArgs.push(['parsedQuery']);
-              } else {
-                const path = binding.split('.');
-                let valueAtPath = req;
+              const path = binding.split('.');
+              let valueAtPath = req;
 
-                while (path.length) {
-                  valueAtPath = valueAtPath[path[0]];
-                  path.shift();
-                }
-
-                translatedArgs.push(valueAtPath);
+              while (path.length) {
+                valueAtPath = valueAtPath[path[0]];
+                path.shift();
               }
+
+              translatedArgs.push(valueAtPath);
             }
 
             return original.apply(this, [...translatedArgs, expressBundle]);

@@ -4,21 +4,35 @@ import { take, filter } from 'rxjs/operators';
 
 export interface Event<T> {
   name: string;
-  payload?: T;
+  payload?: any;
 }
 
 /**
  * Fire the decorated function on the specified events
  * @param events
+ * @param {(eventPayload) => any[]}[mapPayloadToArgs]
  */
-export function onEvent(events: string | string[]) {
+export function onEvent(
+  events: string | string[],
+  mapPayloadToArgs?: (eventPayload: any) => any[]
+) {
   return function (target, name, descriptor) {
-    const original = descriptor.value;
+    const original: Function = descriptor.value;
 
     if (typeof original === 'function') {
-      const eventBus = Injector.resolve<EventBus>(EventBus);
+      const eventBus = Injector.resolve(EventBus);
+      let callback = original.bind(Injector.resolve(target.constructor));
 
-      eventBus.on(events, original);
+      if (mapPayloadToArgs) {
+        // there's a provided function for mapping params between functions, use it
+        callback = function ({ payload }: Event<any>) {
+          return original
+            .bind(Injector.resolve(target.constructor))
+            .apply(this, mapPayloadToArgs(payload));
+        };
+      }
+
+      eventBus.on(events, callback);
     }
 
     return descriptor;
@@ -34,7 +48,7 @@ export function triggerEvent(eventName: string) {
     const original = descriptor.value;
 
     if (typeof original === 'function') {
-      descriptor.value = async function (...args: any[]) {
+      descriptor.value = async function (...args: any) {
         const result = await original
           // we bind the original function to the instance of `target` from the Injector store for the `this` context
           .bind(Injector.resolve(target.constructor))
