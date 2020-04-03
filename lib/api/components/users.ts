@@ -10,7 +10,7 @@ import { UserRepository, User } from '../data/entities/user';
 
 // errors
 import { BadRequestError } from '../errors';
-import { onEvent } from '../events';
+import { OnEvent } from '../events';
 
 @Injectable()
 export class UsersComponent {
@@ -45,7 +45,7 @@ export class UsersComponent {
 
   @Route({ method: HttpMethod.PATCH, route: '/users/:id' })
   @Params('params.id', 'body.updates')
-  @onEvent('USER_LOGIN', (payload) => {
+  @OnEvent('USER_LOGIN', (payload) => {
     return [payload.user.id, { lastLogin: new Date() }];
   })
   async updateUser(id: string, updates: Partial<User>): Promise<User> {

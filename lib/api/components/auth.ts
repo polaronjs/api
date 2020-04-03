@@ -13,7 +13,7 @@ import { UserRepository, User } from '../data/entities/user';
 
 // errors
 import { UnauthorizedError } from '../errors';
-import { triggerEvent } from '../events';
+import { TriggerEvent } from '../events';
 
 @Injectable()
 export class AuthComponent {
@@ -24,7 +24,7 @@ export class AuthComponent {
   ) {}
 
   @Route({ method: HttpMethod.POST, route: '/users/tokens' })
-  @triggerEvent('USER_LOGIN')
+  @TriggerEvent('USER_LOGIN')
   @Params('body.user')
   async getToken({ username, password }) {
     const user = await this.repo.findOneWithPassword(username);

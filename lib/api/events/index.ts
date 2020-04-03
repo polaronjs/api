@@ -12,7 +12,7 @@ export interface Event<T> {
  * @param events
  * @param {(eventPayload) => any[]}[mapPayloadToArgs]
  */
-export function onEvent(
+export function OnEvent(
   events: string | string[],
   mapPayloadToArgs?: (eventPayload: any) => any[]
 ) {
@@ -43,7 +43,7 @@ export function onEvent(
  * Fire the specified event when this function is called
  * @param eventName
  */
-export function triggerEvent(eventName: string) {
+export function TriggerEvent(eventName: string) {
   return function (target, name, descriptor) {
     const original = descriptor.value;
 
