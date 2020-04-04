@@ -7,8 +7,6 @@ const colors = {
   ERROR: chalk.red,
 };
 
-process.env.THRUSTR_VERBOSE = 'true';
-
 ///////////////////////
 // Startup
 ///////////////////////
