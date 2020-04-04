@@ -5,7 +5,7 @@ export type Injectable<T> = new (...args: any[]) => T;
 export class Injector {
   private static instance: Injector;
 
-  private injectables = new Map<Injectable<any>, any>();
+  private injectables = new Map<Injectable<any> | any, any>();
 
   private constructor() {}
 

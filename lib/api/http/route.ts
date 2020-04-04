@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { Injector } from '../injector';
+import { Tokenizer } from '../services';
 import { ThrustrCore } from '../core';
 
 export enum HttpMethod {
@@ -33,6 +34,23 @@ export function Route({
           const expressBundle = { req, res, next };
 
           try {
+            // extract any supplied bearer tokens and append contents to req.user
+            // @ts-ignore TODO fix this type mismatch for abstract classes
+            const tokenizer = Injector.resolve(Tokenizer);
+
+            const authHeaders = req.headers.authorization || undefined;
+
+            if (authHeaders) {
+              const [type, token] = [
+                authHeaders.split(' ')[0],
+                authHeaders.split(' ').slice(1).join(''),
+              ];
+
+              if (type === 'Bearer') {
+                req['user'] = tokenizer.decode(token);
+              }
+            }
+
             // handle express functionality
             const result = await original
               // we bind the original function to the instance of `target` from the Injector store for the `this` context
