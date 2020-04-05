@@ -15,26 +15,22 @@ export function Params(...bindings: string[]) {
         if (expressBundle) {
           const { req, next } = expressBundle;
 
-          try {
-            // resolve the parameter bindings
-            const translatedArgs = [];
+          // resolve the parameter bindings
+          const translatedArgs = [];
 
-            for (const binding of bindings) {
-              const path = binding.split('.');
-              let valueAtPath = req;
+          for (const binding of bindings) {
+            const path = binding.split('.');
+            let valueAtPath = req;
 
-              while (path.length) {
-                valueAtPath = valueAtPath[path[0]];
-                path.shift();
-              }
-
-              translatedArgs.push(valueAtPath);
+            while (path.length) {
+              valueAtPath = valueAtPath[path[0]];
+              path.shift();
             }
 
-            return original.apply(this, [...translatedArgs, expressBundle]);
-          } catch (error) {
-            next(error);
+            translatedArgs.push(valueAtPath);
           }
+
+          return original.apply(this, [...translatedArgs, expressBundle]);
         } else {
           // this wasn't called from express, ignore express overhead
           return original.apply(this, [...args, false]);

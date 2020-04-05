@@ -1,7 +1,8 @@
-import { prop } from '@typegoose/typegoose';
+import { prop, index } from '@typegoose/typegoose';
 import { Injectable } from '../../injector';
 import { CreateableEntity, Repository } from '.';
 
+@index({ name: 'text' })
 export class FileEntity extends CreateableEntity {
   @prop({ required: true })
   name: string;

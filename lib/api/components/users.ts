@@ -4,6 +4,7 @@ import { Hasher } from '../services';
 // http
 import { Route, StatusCode, Params } from '../http';
 import { HttpMethod } from '../http/route';
+import { Query, ThrustrQuery } from '../http/query';
 
 // entities
 import { UserRepository, User, AccessLevel } from '../data/entities/user';
@@ -46,8 +47,8 @@ export class UsersComponent {
 
   @Route({ method: HttpMethod.GET, route: '/users' })
   @Authorize({ minimumAccessLevel: AccessLevel.SUPER })
-  @Params('query')
-  getUsers(query?: any): Promise<User[]> {
+  @Query()
+  getUsers(query?: ThrustrQuery<User>): Promise<User[]> {
     return this.repo.find(query);
   }
 

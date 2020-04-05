@@ -1,8 +1,9 @@
 import { CreateableEntity, Repository } from '.';
 import { Category } from './category';
-import { prop, Ref } from '@typegoose/typegoose';
+import { prop, Ref, index } from '@typegoose/typegoose';
 import { Injectable } from '../../injector';
 
+@index({ title: 'text', body: 'text' })
 export class Article extends CreateableEntity {
   @prop({ required: true })
   title: string;

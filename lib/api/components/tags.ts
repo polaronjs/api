@@ -4,6 +4,7 @@ import { Route, StatusCode, Params } from '../http';
 import { HttpMethod } from '../http/route';
 import { Authorize } from '../http/authorize';
 import { AccessLevel } from '../data/entities/user';
+import { Query, ThrustrQuery } from '../http/query';
 
 @Injectable()
 export class TagsComponent {
@@ -25,9 +26,9 @@ export class TagsComponent {
   }
 
   @Route({ method: HttpMethod.GET, route: '/tags' })
-  @Params('query')
+  @Query()
   @Authorize({ minimumAccessLevel: AccessLevel.EDITOR })
-  getTags(query?: any) {
+  getTags(query?: ThrustrQuery<Tag>) {
     return this.repo.find(query);
   }
 

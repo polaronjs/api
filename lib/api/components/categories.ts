@@ -4,6 +4,7 @@ import { Route, StatusCode, Params } from '../http';
 import { HttpMethod } from '../http/route';
 import { AccessLevel } from '../data/entities/user';
 import { Authorize } from '../http/authorize';
+import { Query, ThrustrQuery } from '../http/query';
 
 @Injectable()
 export class CategoriesComponent {
@@ -25,9 +26,9 @@ export class CategoriesComponent {
   }
 
   @Route({ method: HttpMethod.GET, route: '/categories' })
-  @Params('query')
+  @Query()
   @Authorize({ minimumAccessLevel: AccessLevel.EDITOR })
-  getCategories(query?: any) {
+  getCategories(query?: ThrustrQuery<Category>) {
     return this.repo.find({ query });
   }
 

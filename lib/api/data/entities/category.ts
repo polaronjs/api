@@ -1,12 +1,13 @@
 import { CreateableEntity, Repository } from '.';
-import { prop } from '@typegoose/typegoose';
+import { prop, index } from '@typegoose/typegoose';
 import { Injectable } from '../../injector';
 
+@index({ name: 'text', description: 'text' })
 export class Category extends CreateableEntity {
   @prop({ required: true, unique: true })
   name: string;
 
-  @prop()
+  @prop({ text: true })
   description?: string;
 }
 

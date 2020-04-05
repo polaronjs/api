@@ -1,6 +1,7 @@
 import { prop, Ref, getModelForClass } from '@typegoose/typegoose';
 import { User } from './user';
 import { Model } from '..';
+import { ThrustrQuery } from '../../http/query';
 
 // TODO make database agnostic
 export class Entity {
@@ -40,14 +41,6 @@ export class CreateableEntity extends Entity {
   lastUpdatedBy?: Ref<User>;
 }
 
-export interface RepositoryOptions<T> {
-  query?: RepositoryQuery<T>;
-  sorting?: { property: string; direction?: 1 | -1 };
-  pagination?: { limit?: number; offset?: number };
-}
-
-export type RepositoryQuery<T> = Partial<T> & { [key: string]: any };
-
 export abstract class Repository<T> {
   protected model: Model<T>;
 
@@ -57,7 +50,9 @@ export abstract class Repository<T> {
 
   create(document: Partial<T>): Promise<T> {
     return this.model.create(document).then((value) => {
-      return Entity.from<T>(value);
+      const result = value.toObject();
+      delete result.password;
+      return Entity.from<T>(result);
     });
   }
 
@@ -73,13 +68,24 @@ export abstract class Repository<T> {
       });
   }
 
-  find(options?: RepositoryOptions<T>): Promise<T[]> {
+  find(options?: ThrustrQuery<T>): Promise<T[]> {
     const { query, sorting, pagination } = options || {};
-    const request = this.model.find(query);
+    let request = this.model.find(query);
+
+    if (
+      query &&
+      Object.keys(query).length === 1 &&
+      query.hasOwnProperty('search')
+    ) {
+      // @ts-ignore TODO investigate/raise issue with Typegoose about typings here
+      request = this.model.find({
+        $text: { $search: '"' + query.search + '"', $caseSensitive: false },
+      });
+    }
 
     if (pagination) {
       if (pagination.offset) {
-        request.limit(pagination.offset);
+        request.skip(pagination.offset);
       }
 
       if (pagination.limit) {

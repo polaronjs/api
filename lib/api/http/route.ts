@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 import { Injector } from '../injector';
 import { Tokenizer } from '../services';
 import { ThrustrCore } from '../core';
+import { ThrustrError } from '../errors';
 
 export enum HttpMethod {
   GET = 'get',
@@ -61,6 +62,9 @@ export function Route({
 
             return result;
           } catch (error) {
+            if (!(error instanceof ThrustrError)) {
+              console.error(error);
+            }
             next(error);
           }
         } else {

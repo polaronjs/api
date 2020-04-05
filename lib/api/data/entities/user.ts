@@ -1,4 +1,4 @@
-import { prop } from '@typegoose/typegoose';
+import { prop, index } from '@typegoose/typegoose';
 import { Entity, Repository } from '.';
 import { Injectable } from '../../injector';
 
@@ -9,6 +9,7 @@ export enum AccessLevel {
   SUPER = 3,
 }
 
+@index({ name: 'text', email: 'text' })
 export class User extends Entity {
   @prop({ required: true, unique: true })
   username: string;
