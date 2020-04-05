@@ -1,4 +1,9 @@
-import { prop, Ref, getModelForClass } from '@typegoose/typegoose';
+import {
+  prop,
+  Ref,
+  getModelForClass,
+  modelOptions,
+} from '@typegoose/typegoose';
 import { User } from './user';
 import { Model } from '..';
 import { ThrustrQuery } from '../../http/query';
@@ -27,6 +32,11 @@ export class Entity {
   }
 }
 
+@modelOptions({
+  schemaOptions: {
+    timestamps: { createdAt: 'createdDate', updatedAt: 'updatedDate' },
+  },
+})
 export class CreateableEntity extends Entity {
   @prop({ required: true })
   createdDate: Date;
@@ -48,11 +58,10 @@ export abstract class Repository<T> {
     this.model = getModelForClass(entity);
   }
 
-  create(document: Partial<T>): Promise<T> {
-    return this.model.create(document).then((value) => {
-      const result = value.toObject();
-      delete result.password;
-      return Entity.from<T>(result);
+  async create(document: Partial<T>): Promise<T> {
+    const result = await this.model.create(document);
+    return this.model.findById(result._id).then((value) => {
+      return Entity.from(value);
     });
   }
 
@@ -64,7 +73,7 @@ export abstract class Repository<T> {
       .lean<T>()
       .exec()
       .then((value) => {
-        return Entity.from<T>(value);
+        return Entity.from(value);
       });
   }
 
@@ -103,15 +112,14 @@ export abstract class Repository<T> {
       .lean<T>()
       .exec()
       .then((values) => {
-        return values.map((value) => Entity.from<T>(value));
+        return values.map((value) => Entity.from(value));
       });
   }
 
   async update(id: string, updates: any): Promise<T> {
-    // TODO can this be made more efficient?
     await this.model.findByIdAndUpdate(id, updates).lean<T>().exec();
     return this.findOne(id).then((value) => {
-      return Entity.from<T>(value);
+      return Entity.from(value);
     });
   }
 
@@ -121,7 +129,7 @@ export abstract class Repository<T> {
       .lean<T>()
       .exec()
       .then((value) => {
-        return Entity.from<T>(value);
+        return Entity.from(value);
       });
   }
 }
