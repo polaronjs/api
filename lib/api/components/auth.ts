@@ -31,6 +31,9 @@ export class AuthComponent {
 
     if (user && (await this.hasher.compare(password, user.password))) {
       // login successful, make a token and set the user's last login time
+
+      delete user.password;
+
       return {
         user,
         token: this.tokenizer.sign<User>(user, { expiresIn: '24h' }),

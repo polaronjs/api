@@ -5,7 +5,7 @@ import { Router } from 'express';
 import * as WebSocket from 'ws';
 import { Injectable } from '../injector';
 
-@Injectable({ immediate: true })
+@Injectable()
 export class ThrustrCore {
   private _router = Router();
   private _ws: (ws: WebSocket) => void;

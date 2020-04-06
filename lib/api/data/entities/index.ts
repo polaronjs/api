@@ -7,8 +7,8 @@ import {
 import { User } from './user';
 import { Model } from '..';
 import { ThrustrQuery } from '../../http/query';
+import { InternalError } from '../../errors';
 
-// TODO make database agnostic
 export class Entity {
   id: any;
 
@@ -25,6 +25,11 @@ export class Entity {
 
     // for all other properties, set them on the entity
     for (let [key, value] of Object.entries(data)) {
+      if (typeof value['__v'] !== 'undefined') {
+        // recursively convert child entities
+        value = Entity.from(value);
+      }
+
       entity[key] = value;
     }
 
@@ -38,13 +43,11 @@ export class Entity {
   },
 })
 export class CreateableEntity extends Entity {
-  @prop({ required: true })
   createdDate: Date;
 
   @prop({ required: true, ref: 'User' })
   createdBy: Ref<User>;
 
-  @prop()
   lastUpdatedDate?: Date;
 
   @prop({ ref: 'User' })
@@ -58,23 +61,30 @@ export abstract class Repository<T> {
     this.model = getModelForClass(entity);
   }
 
-  async create(document: Partial<T>): Promise<T> {
+  async create(document: Partial<T>, requester?: User): Promise<T> {
+    if (!requester && this.model.schema.paths.createdBy) {
+      throw new InternalError({
+        message: 'Requester not specified for creation',
+      });
+    } else if (this.model.schema.paths.createdBy) {
+      document['createdBy'] = requester.id;
+      document['lastUpdatedBy'] = requester.id;
+    }
+
     const result = await this.model.create(document);
     return this.model.findById(result._id).then((value) => {
-      return Entity.from(value);
+      return Entity.from(value.toObject());
     });
   }
 
-  findOne(id: string): Promise<T> {
-    return this.model
+  async findOne(id: string): Promise<T> {
+    const value = await this.model
       .findById(id)
       .populate('createdBy')
-      .populate('updatedBy')
-      .lean<T>()
-      .exec()
-      .then((value) => {
-        return Entity.from(value);
-      });
+      .populate('lastUpdatedBy')
+      .exec();
+
+    return Entity.from(value.toObject());
   }
 
   find(options?: ThrustrQuery<T>): Promise<T[]> {
@@ -116,7 +126,15 @@ export abstract class Repository<T> {
       });
   }
 
-  async update(id: string, updates: any): Promise<T> {
+  async update(id: string, updates: any, requester?: User): Promise<T> {
+    if (!requester && this.model.schema.paths.lastUpdatedBy) {
+      throw new InternalError({
+        message: 'Requester not specified for updating',
+      });
+    } else if (this.model.schema.paths.lastUpdatedBy) {
+      document['lastUpdatedBy'] = requester.id;
+    }
+
     await this.model.findByIdAndUpdate(id, updates).lean<T>().exec();
     return this.findOne(id).then((value) => {
       return Entity.from(value);

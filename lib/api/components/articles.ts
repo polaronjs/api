@@ -3,7 +3,7 @@ import { Route, StatusCode, Params } from '../http';
 import { ArticleRepository, Article } from '../data/entities/article';
 import { HttpMethod } from '../http/route';
 import { Authorize } from '../http/authorize';
-import { AccessLevel } from '../data/entities/user';
+import { AccessLevel, User } from '../data/entities/user';
 import { Query, ThrustrQuery } from '../http/query';
 
 @Injectable()
@@ -14,8 +14,11 @@ export class ArticlesComponent {
   @Params('body.article')
   @StatusCode(201)
   @Authorize({ minimumAccessLevel: AccessLevel.EDITOR })
-  createArticle(article: Partial<Article>): Promise<Article> {
-    return this.repo.create(article);
+  createArticle(
+    article: Partial<Article>,
+    { requester }: { requester: User }
+  ): Promise<Article> {
+    return this.repo.create(article, requester);
   }
 
   @Route({ method: HttpMethod.GET, route: '/articles/:id' })
@@ -33,8 +36,12 @@ export class ArticlesComponent {
   @Route({ method: HttpMethod.PATCH, route: '/articles/:id' })
   @Params('params.id', 'body.updates')
   @Authorize({ minimumAccessLevel: AccessLevel.EDITOR })
-  updateArticle(id: string, updates: Partial<Article>): Promise<Article> {
-    return this.repo.update(id, updates);
+  updateArticle(
+    id: string,
+    updates: Partial<Article>,
+    { requester }: { requester: User }
+  ): Promise<Article> {
+    return this.repo.update(id, updates, requester);
   }
 
   @Route({ method: HttpMethod.GET, route: '/artices/:id' })

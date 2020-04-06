@@ -53,12 +53,22 @@ export class UsersComponent {
   }
 
   @Route({ method: HttpMethod.PATCH, route: '/users/:id' })
-  @Authorize({ minimumAccessLevel: AccessLevel.SUPER })
+  @Authorize({
+    preExecAuth: (user, req) => {
+      return user.id === req.params.id || user.accessLevel >= AccessLevel.SUPER;
+    },
+  })
   @Params('params.id', 'body.updates')
   @OnEvent('USER_LOGIN', (payload) => {
     return [payload.user.id, { lastLogin: new Date() }];
   })
   async updateUser(id: string, updates: Partial<User>): Promise<User> {
+    if (updates.username) {
+      throw new BadRequestError({
+        message: "A user's username cannot be changed",
+      });
+    }
+
     if (updates.password) {
       updates.password = await this.hasher.hash(updates.password);
     }

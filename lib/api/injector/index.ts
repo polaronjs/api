@@ -86,7 +86,11 @@ export class Injector {
  * Class decorator for providing depdencies defined in constructor
  * @param config
  */
-export function Injectable(config?: { force?: boolean; immediate?: boolean }) {
+export function Injectable(config?: {
+  force?: boolean;
+  useValue?: any;
+  useClass?: Injectable<any>;
+}) {
   return function (ctor: Injectable<any>) {
     Injector.register(ctor, config);
   };

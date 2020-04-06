@@ -2,7 +2,7 @@ import { Injectable } from '../injector';
 import { CategoryRepository, Category } from '../data/entities/category';
 import { Route, StatusCode, Params } from '../http';
 import { HttpMethod } from '../http/route';
-import { AccessLevel } from '../data/entities/user';
+import { AccessLevel, User } from '../data/entities/user';
 import { Authorize } from '../http/authorize';
 import { Query, ThrustrQuery } from '../http/query';
 
@@ -14,8 +14,11 @@ export class CategoriesComponent {
   @Params('body.category')
   @StatusCode(201)
   @Authorize({ minimumAccessLevel: AccessLevel.ADMIN })
-  createCategory(category: Partial<Category>) {
-    return this.repo.create(category);
+  createCategory(
+    category: Partial<Category>,
+    { requester }: { requester: User }
+  ) {
+    return this.repo.create(category, requester);
   }
 
   @Route({ method: HttpMethod.GET, route: '/categories/:id' })
@@ -35,8 +38,12 @@ export class CategoriesComponent {
   @Route({ method: HttpMethod.PATCH, route: '/categories/:id' })
   @Params('params.id', 'body.updates')
   @Authorize({ minimumAccessLevel: AccessLevel.ADMIN })
-  updateCategories(id: string, updates: Partial<Category>) {
-    return this.repo.update(id, updates);
+  updateCategories(
+    id: string,
+    updates: Partial<Category>,
+    { requester }: { requester: User }
+  ) {
+    return this.repo.update(id, updates, requester);
   }
 
   @Route({ method: HttpMethod.GET, route: '/categories/:id' })

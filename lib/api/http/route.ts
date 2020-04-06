@@ -3,6 +3,8 @@ import { Injector } from '../injector';
 import { Tokenizer } from '../services';
 import { ThrustrCore } from '../core';
 import { ThrustrError } from '../errors';
+import { Entity } from '../data/entities';
+import { User } from '../data/entities/user';
 
 export enum HttpMethod {
   GET = 'get',
@@ -31,8 +33,7 @@ export function Route({
         const [req, res, next] = args as [Request, Response, NextFunction];
 
         if (req && req.path && res && res.send) {
-          // this was forwarded from express, create bundle of express objects and pass to next decorator in chain
-          const expressBundle = { req, res, next };
+          // this was called from express
 
           try {
             // extract any supplied bearer tokens and append contents to req.user
@@ -51,6 +52,16 @@ export function Route({
                 req['user'] = tokenizer.decode(token);
               }
             }
+
+            // create bundle of express objects and pass to next decorator in chain
+            const expressBundle = {
+              req,
+              res,
+              next,
+              requester: req['user']
+                ? Entity.from<User>(req['user'])
+                : undefined,
+            };
 
             // handle express functionality
             const result = await original
