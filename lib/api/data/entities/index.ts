@@ -7,7 +7,7 @@ import {
 import { User } from './user';
 import { Model } from '..';
 import { ThrustrQuery } from '../../http/query';
-import { InternalError } from '../../errors';
+import { InternalError, NotFoundError } from '../../errors';
 
 export class Entity {
   id: any;
@@ -78,13 +78,17 @@ export abstract class Repository<T> {
   }
 
   async findOne(id: string): Promise<T> {
-    const value = await this.model
-      .findById(id)
-      .populate('createdBy')
-      .populate('lastUpdatedBy')
-      .exec();
+    try {
+      const value = await this.model
+        .findById(id)
+        .populate('createdBy')
+        .populate('lastUpdatedBy')
+        .exec();
 
-    return Entity.from(value.toObject());
+      return Entity.from(value.toObject());
+    } catch (_) {
+      throw new NotFoundError();
+    }
   }
 
   find(options?: ThrustrQuery<T>): Promise<T[]> {
