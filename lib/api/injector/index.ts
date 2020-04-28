@@ -1,6 +1,6 @@
 import { INJECTABLE_HYDRATED } from '../messages';
 
-export type Injectable<T> = new (...args: any[]) => T;
+export type Injectable<T> = Function & { prototype: T };
 
 export class Injector {
   private static instance: Injector;
