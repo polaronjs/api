@@ -19,9 +19,11 @@ export enum HttpMethod {
 export function Route({
   method = HttpMethod.GET,
   route,
+  middleware,
 }: {
   method: HttpMethod;
   route: string;
+  middleware?: any[];
 }) {
   return function (target, functionName: string, descriptor) {
     const original = descriptor.value;
@@ -37,7 +39,6 @@ export function Route({
 
           try {
             // extract any supplied bearer tokens and append contents to req.user
-            // @ts-ignore TODO fix this type mismatch for abstract classes
             const tokenizer = Injector.resolve(Tokenizer);
 
             const authHeaders = req.headers.authorization || undefined;
@@ -67,12 +68,13 @@ export function Route({
             const result = await original
               // we bind the original function to the instance of `target` from the Injector store for the `this` context
               .bind(Injector.resolve(target.constructor))
-              .apply(this, [...args, expressBundle]);
+              .apply(this, [expressBundle]);
 
             res.send(result);
 
             return result;
           } catch (error) {
+            console.log(error);
             if (!(error instanceof ThrustrError)) {
               console.error(error);
             }
@@ -88,7 +90,7 @@ export function Route({
       const { router } = Injector.resolve(ThrustrCore);
 
       // map the new function to the given route/method combination
-      router[method](route, descriptor.value);
+      router[method](route, ...(middleware || []), descriptor.value);
     }
 
     return descriptor;

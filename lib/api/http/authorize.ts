@@ -29,7 +29,9 @@ export function Authorize(conditions?: RouteComparer) {
         if (req) {
           if (!req['user']) {
             throw new UnauthorizedError();
-          } else if (conditions) {
+          }
+
+          if (conditions) {
             // at this point we know the requester's identity
             // the route has conditions, perform authorization checks
             const {
@@ -58,10 +60,10 @@ export function Authorize(conditions?: RouteComparer) {
               }
 
               return result;
-            } else {
-              return original.apply(this, args);
             }
           }
+
+          return original.apply(this, args);
         }
       };
     }

@@ -14,6 +14,7 @@ import { UserRepository, User } from '../data/entities/user';
 // errors
 import { UnauthorizedError } from '../errors';
 import { TriggerEvent } from '../events';
+import { Authorize } from '../http/authorize';
 
 @Injectable()
 export class AuthComponent {
@@ -41,5 +42,13 @@ export class AuthComponent {
     } else {
       throw new UnauthorizedError();
     }
+  }
+
+  @Route({ method: HttpMethod.GET, route: '/users/tokens/' })
+  @Authorize()
+  async translateToken({ requester: user }: { requester: User }) {
+    delete user['iat'];
+    delete user['exp'];
+    return user;
   }
 }

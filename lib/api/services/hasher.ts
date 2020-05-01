@@ -1,5 +1,5 @@
 import * as bcrypt from 'bcrypt';
-import { Injectable, Injector } from '../injector';
+import { Injector } from '../injector';
 
 export abstract class Hasher {
   abstract hash(value: string): Promise<string>;

@@ -3,3 +3,4 @@ import './articles';
 import './categories';
 import './tags';
 import './users';
+import './files';
