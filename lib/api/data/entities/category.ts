@@ -1,6 +1,6 @@
 import { CreateableEntity, Repository } from '.';
 import { prop, index } from '@typegoose/typegoose';
-import { Injectable } from '../../injector';
+import { Injectable } from '@phantomcms/injector';
 
 @index({ name: 'text', description: 'text' })
 export class Category extends CreateableEntity {

@@ -1,10 +1,10 @@
-import { Injectable } from '../injector';
+import { Injectable } from '@phantomcms/injector';
 import { TagRepository, Tag } from '../data/entities/tag';
 import { Route, StatusCode, Params } from '../http';
 import { HttpMethod } from '../http/route';
 import { Authorize } from '../http/authorize';
 import { AccessLevel, User } from '../data/entities/user';
-import { Query, ThrustrQuery } from '../http/query';
+import { Query, PhantomQuery } from '../http/query';
 
 @Injectable()
 export class TagsComponent {
@@ -28,7 +28,7 @@ export class TagsComponent {
   @Route({ method: HttpMethod.GET, route: '/tags' })
   @Query()
   @Authorize({ minimumAccessLevel: AccessLevel.EDITOR })
-  getTags(query?: ThrustrQuery<Tag>) {
+  getTags(query?: PhantomQuery<Tag>) {
     return this.repo.find(query);
   }
 

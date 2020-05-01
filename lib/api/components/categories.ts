@@ -1,10 +1,10 @@
-import { Injectable } from '../injector';
+import { Injectable } from '@phantomcms/injector';
 import { CategoryRepository, Category } from '../data/entities/category';
 import { Route, StatusCode, Params } from '../http';
 import { HttpMethod } from '../http/route';
 import { AccessLevel, User } from '../data/entities/user';
 import { Authorize } from '../http/authorize';
-import { Query, ThrustrQuery } from '../http/query';
+import { Query, PhantomQuery } from '../http/query';
 
 @Injectable()
 export class CategoriesComponent {
@@ -31,7 +31,7 @@ export class CategoriesComponent {
   @Route({ method: HttpMethod.GET, route: '/categories' })
   @Query()
   @Authorize({ minimumAccessLevel: AccessLevel.EDITOR })
-  getCategories(query?: ThrustrQuery<Category>) {
+  getCategories(query?: PhantomQuery<Category>) {
     return this.repo.find({ query });
   }
 

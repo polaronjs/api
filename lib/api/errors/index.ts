@@ -10,7 +10,7 @@ export enum ErrorType {
   SERVER = 'server',
 }
 
-export abstract class ThrustrError {
+export abstract class PhantomError {
   abstract name: string;
   abstract type: ErrorType;
 
@@ -24,28 +24,28 @@ export abstract class ThrustrError {
 }
 
 // not authenticated at all or not authenticated correctly
-export class UnauthorizedError extends ThrustrError {
+export class UnauthorizedError extends PhantomError {
   name = 'UNAUTHORIZED';
   type = ErrorType.CLIENT;
 }
 
 // authenticated, but not authorized to proceed
-export class ForbiddenError extends ThrustrError {
+export class ForbiddenError extends PhantomError {
   name = 'FORBIDDEN';
   type = ErrorType.CLIENT;
 }
 
-export class NotFoundError extends ThrustrError {
+export class NotFoundError extends PhantomError {
   name = 'NOT_FOUND';
   type = ErrorType.CLIENT;
 }
 
-export class BadRequestError extends ThrustrError {
+export class BadRequestError extends PhantomError {
   name = 'BAD_REQUEST';
   type = ErrorType.CLIENT;
 }
 
-export class InternalError extends ThrustrError {
+export class InternalError extends PhantomError {
   name = 'INTERNAL_ERROR';
   type = ErrorType.SERVER;
 }

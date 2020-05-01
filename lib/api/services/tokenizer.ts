@@ -1,5 +1,5 @@
 import * as jwt from 'jsonwebtoken';
-import { Injector } from '../injector';
+import { Injector } from '@phantomcms/injector';
 
 export abstract class Tokenizer {
   abstract sign<T>(data: T, options?: { expiresIn: number | string }): string;

@@ -1,4 +1,4 @@
-import { Injectable } from '../../injector';
+import { Injectable } from '@phantomcms/injector';
 import { PassThrough } from 'stream';
 import { UploadDestination } from './destinations';
 

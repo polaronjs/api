@@ -8,7 +8,7 @@ export function connect() {
       useUnifiedTopology: true,
       useNewUrlParser: true,
       useFindAndModify: false,
-      dbName: 'thrustr',
+      dbName: 'phantom',
       useCreateIndex: true,
     })
     .then(() => {

@@ -1,10 +1,10 @@
-import { Injectable } from '../injector';
+import { Injectable } from '@phantomcms/injector';
 import { Hasher } from '../services';
 
 // http
 import { Route, StatusCode, Params } from '../http';
 import { HttpMethod } from '../http/route';
-import { Query, ThrustrQuery } from '../http/query';
+import { Query, PhantomQuery } from '../http/query';
 
 // entities
 import { UserRepository, User, AccessLevel } from '../data/entities/user';
@@ -48,7 +48,7 @@ export class UsersComponent {
   @Route({ method: HttpMethod.GET, route: '/users' })
   @Authorize({ minimumAccessLevel: AccessLevel.SUPER })
   @Query()
-  getUsers(query?: ThrustrQuery<User>): Promise<User[]> {
+  getUsers(query?: PhantomQuery<User>): Promise<User[]> {
     return this.repo.find(query);
   }
 

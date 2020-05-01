@@ -1,5 +1,5 @@
 import * as bcrypt from 'bcrypt';
-import { Injector } from '../injector';
+import { Injector } from '@phantomcms/injector';
 
 export abstract class Hasher {
   abstract hash(value: string): Promise<string>;

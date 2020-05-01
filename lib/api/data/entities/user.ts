@@ -1,6 +1,6 @@
 import { prop, index } from '@typegoose/typegoose';
 import { Entity, Repository } from '.';
-import { Injectable } from '../../injector';
+import { Injectable } from '@phantomcms/injector';
 
 export enum AccessLevel {
   USER = 0,

@@ -1,4 +1,4 @@
-import { ThrustrError, InternalError } from '.';
+import { PhantomError, InternalError } from '.';
 
 const errorMappings = {
   UNAUTHORIZED: 401,
@@ -8,10 +8,10 @@ const errorMappings = {
   INTERNAL_ERROR: 500,
 };
 
-export function mapErrorToHttp(error: ThrustrError) {
+export function mapErrorToHttp(error: PhantomError) {
   const { name, message } = error;
 
-  return error instanceof ThrustrError
+  return error instanceof PhantomError
     ? {
         message,
         code: errorMappings[name] || errorMappings.INTERNAL_ERROR,

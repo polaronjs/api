@@ -11,17 +11,17 @@ import { INTERFACE_AVAILABLE } from './messages';
 dotenv.config();
 
 // core
-import { ThrustrCore } from './core';
+import { Core } from './core';
 
 // injector
-import { Injector } from './injector';
+import { Injector } from '@phantomcms/injector';
 
 // errors
 import { NotFoundError } from './errors';
 import { mapErrorToHttp } from './errors/http';
 
 const app = express();
-const router = Injector.resolve<ThrustrCore>(ThrustrCore).router;
+const { router } = Injector.resolve<Core>(Core);
 
 // use body parser
 app.use(bodyParser.urlencoded({ extended: true }));

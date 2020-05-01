@@ -3,10 +3,10 @@
 
 import { Router } from 'express';
 import * as WebSocket from 'ws';
-import { Injectable } from '../injector';
+import { Injectable } from '@phantomcms/injector';
 
 @Injectable()
-export class ThrustrCore {
+export class Core {
   private _router = Router();
   private _ws: (ws: WebSocket) => void;
   private _config: any;

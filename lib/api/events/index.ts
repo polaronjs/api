@@ -1,4 +1,4 @@
-import { Injector, Injectable } from '../injector';
+import { Injector, Injectable } from '@phantomcms/injector';
 import { Subject } from 'rxjs';
 import { take, filter } from 'rxjs/operators';
 

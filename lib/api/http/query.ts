@@ -1,12 +1,12 @@
 import { Request, Response, NextFunction } from 'express';
 
-export interface ThrustrQuery<T> {
-  query?: ThrustrPropertyQuery<T>;
+export interface PhantomQuery<T> {
+  query?: PhantomPropertyQuery<T>;
   sorting?: { property: string; direction?: 1 | -1 };
   pagination?: { limit?: number; offset?: number };
 }
 
-export type ThrustrPropertyQuery<T> = Partial<T> & { [key: string]: any };
+export type PhantomPropertyQuery<T> = Partial<T> & { [key: string]: any };
 
 export function Query() {
   return function (target, name, descriptor) {
@@ -23,7 +23,7 @@ export function Query() {
         if (expressBundle) {
           const { req } = expressBundle;
 
-          const formattedQuery: ThrustrQuery<any> = {};
+          const formattedQuery: PhantomQuery<any> = {};
           const { offset, limit, sortBy, sortDirection, ...query } = req.query;
 
           // build formatted query

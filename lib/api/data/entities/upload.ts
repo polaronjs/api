@@ -1,5 +1,5 @@
 import { Repository } from '.';
-import { Injectable } from 'lib/api/injector';
+import { Injectable } from '@phantomcms/injector';
 import { prop } from '@typegoose/typegoose';
 import { FileEntity } from './file';
 

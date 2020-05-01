@@ -1,5 +1,5 @@
 import { prop, index } from '@typegoose/typegoose';
-import { Injectable } from '../../injector';
+import { Injectable } from '@phantomcms/injector';
 import { CreateableEntity, Repository } from '.';
 
 @index({ name: 'text' })

@@ -6,7 +6,7 @@ import {
 } from '@typegoose/typegoose';
 import { User } from './user';
 import { Model } from '..';
-import { ThrustrQuery } from '../../http/query';
+import { PhantomQuery } from '../../http/query';
 import { InternalError, NotFoundError } from '../../errors';
 
 export class Entity {
@@ -91,7 +91,7 @@ export abstract class Repository<T> {
     }
   }
 
-  find(options?: ThrustrQuery<T>): Promise<T[]> {
+  find(options?: PhantomQuery<T>): Promise<T[]> {
     const { query, sorting, pagination } = options || {};
     let request = this.model.find(query);
 

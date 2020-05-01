@@ -1,4 +1,4 @@
-import { Injectable } from '../injector';
+import { Injectable } from '@phantomcms/injector';
 
 // http
 import { Route, Params } from '../http';

@@ -1,5 +1,5 @@
 import { PassThrough } from 'stream';
-import { Injector } from '../../injector';
+import { Injector } from '@phantomcms/injector';
 import * as Client from 'ssh2-sftp-client';
 import { buildPath } from '../../helpers';
 import { InternalError } from '../../errors';
@@ -20,10 +20,11 @@ export class SFTPUploadDestination extends UploadDestination {
   constructor() {
     super();
 
+    // TODO
     this.sftp
       .connect({
         host: process.env.FTP_HOST,
-        port: 22,
+        port: parseInt(process.env.FTP_PORT) || 22,
         username: process.env.FTP_USERNAME,
         password: process.env.FTP_PASSWORD,
       })

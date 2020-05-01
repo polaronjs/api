@@ -1,8 +1,8 @@
 import { Request, Response, NextFunction } from 'express';
-import { Injector } from '../injector';
+import { Injector } from '@phantomcms/injector';
 import { Tokenizer } from '../services';
-import { ThrustrCore } from '../core';
-import { ThrustrError } from '../errors';
+import { Core } from '../core';
+import { PhantomError } from '../errors';
 import { Entity } from '../data/entities';
 import { User } from '../data/entities/user';
 
@@ -75,7 +75,7 @@ export function Route({
             return result;
           } catch (error) {
             console.log(error);
-            if (!(error instanceof ThrustrError)) {
+            if (!(error instanceof PhantomError)) {
               console.error(error);
             }
             next(error);
@@ -86,8 +86,8 @@ export function Route({
         }
       };
 
-      // inject the ThrustrCore to get the instance of Router
-      const { router } = Injector.resolve(ThrustrCore);
+      // resolve the Core object to get the instance of Router
+      const { router } = Injector.resolve(Core);
 
       // map the new function to the given route/method combination
       router[method](route, ...(middleware || []), descriptor.value);

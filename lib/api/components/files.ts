@@ -1,5 +1,4 @@
-import { Request } from 'express';
-import { Injectable } from '../injector';
+import { Injectable } from '@phantomcms/injector';
 import { Route, HttpMethod } from '../http/route';
 import { Params, StatusCode } from '../http';
 import { Uploader } from '../services/uploads';
