@@ -18,12 +18,8 @@ export class SFTPUploadDestination extends UploadDestination {
 
   private sftp = new Client();
 
-  private constructor() {
+  constructor() {
     super();
-  }
-
-  async ConnectToServer(): Promise<SFTPUploadDestination> {
-    const instance = new SFTPUploadDestination();
 
     let retryAttempts = 0;
 
@@ -32,21 +28,14 @@ export class SFTPUploadDestination extends UploadDestination {
     });
 
     connectionOperation.attempt(async (retryAttempts) => {
-      const error = await instance.connect();
+      const error = await this.connect();
 
       if (connectionOperation.retry(error)) {
         retryAttempts += 1;
+
         return;
       }
     });
-
-    if (connectionOperation.mainError) {
-      throw new InternalError({
-        message: `Unable to establish connection to SPT server after ${retryAttempts} attempts`,
-      });
-    }
-
-    return instance;
   }
 
   private async connect(): Promise<Error> {
