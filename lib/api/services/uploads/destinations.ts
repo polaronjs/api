@@ -2,7 +2,8 @@ import { PassThrough } from 'stream';
 import { Injector } from '@phantomcms/injector';
 import * as Client from 'ssh2-sftp-client';
 import { buildPath } from '../../helpers';
-import { InternalError } from '../../errors';
+import { InternalError, PhantomError } from '../../errors';
+import { operation } from 'retry';
 
 export abstract class UploadDestination {
   abstract putStream(
@@ -17,25 +18,58 @@ export class SFTPUploadDestination extends UploadDestination {
 
   private sftp = new Client();
 
-  constructor() {
+  private constructor() {
     super();
+  }
 
-    // TODO
-    this.sftp
-      .connect({
+  async ConnectToServer(): Promise<SFTPUploadDestination> {
+    const instance = new SFTPUploadDestination();
+
+    let retryAttempts = 0;
+
+    const connectionOperation = operation({
+      retries: 2,
+    });
+
+    connectionOperation.attempt(async (retryAttempts) => {
+      const error = await instance.connect();
+
+      if (connectionOperation.retry(error)) {
+        retryAttempts += 1;
+        return;
+      }
+    });
+
+    if (connectionOperation.mainError) {
+      throw new InternalError({
+        message: `Unable to establish connection to SPT server after ${retryAttempts} attempts`,
+      });
+    }
+
+    return instance;
+  }
+
+  private async connect(): Promise<Error> {
+    let errorResponse: Error;
+
+    try {
+      await this.sftp.connect({
         host: process.env.FTP_HOST,
         port: parseInt(process.env.FTP_PORT) || 22,
         username: process.env.FTP_USERNAME,
         password: process.env.FTP_PASSWORD,
-      })
-      .then(() => {
-        console.log('SFTP Connection Established');
-        this.connected = true;
-      })
-      .catch(() => {
-        console.log('Error! SFTP Connection COULD NOT be Established');
-        this.connected = false;
       });
+
+      console.log('SFTP Connection Established');
+      this.connected = true;
+    } catch (error) {
+      console.log('Error! SFTP Connection COULD NOT be Established');
+      this.connected = false;
+
+      errorResponse = error;
+    }
+
+    return errorResponse;
   }
 
   async putStream(
@@ -58,6 +92,28 @@ export class SFTPUploadDestination extends UploadDestination {
       }
 
       this.sftp.put(fileStream, fullPath);
+    }
+  }
+
+  async deleteFile(filePath: string) {
+    if (this.connected) {
+      this.sftp.delete(filePath);
+    }
+  }
+
+  async getFiles(filePaths: string[]): Promise<Buffer[]> {
+    if (this.connected) {
+      const fileStreams: Buffer[] = [];
+
+      filePaths.map(async (filePath: string) => {
+        if (this.sftp.exists(filePath)) {
+          const fileStream = <Buffer>await this.sftp.get(filePath);
+
+          fileStreams.push(fileStream);
+        }
+      });
+
+      return fileStreams;
     }
   }
 
