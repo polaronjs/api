@@ -28,6 +28,9 @@ export class User extends Entity {
 
   @prop()
   lastLogin?: Date;
+
+  @prop()
+  image?: string;
 }
 
 export interface UserQuery {
@@ -53,7 +56,7 @@ export class UserRepository extends Repository<User> {
       .lean<User>()
       .exec()
       .then((value) => {
-        return Entity.from<User>(value);
+        return value ? Entity.from<User>(value) : undefined;
       });
   }
 }

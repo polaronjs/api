@@ -20,7 +20,6 @@ export class SFTPUploadDestination extends UploadDestination {
   constructor() {
     super();
 
-    // TODO
     this.sftp
       .connect({
         host: process.env.FTP_HOST,

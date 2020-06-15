@@ -8,7 +8,7 @@ export function connect() {
       useUnifiedTopology: true,
       useNewUrlParser: true,
       useFindAndModify: false,
-      dbName: 'phantom',
+      dbName: 'polaron',
       useCreateIndex: true,
     })
     .then(() => {
