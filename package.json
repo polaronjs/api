@@ -7,8 +7,9 @@
     "lib": "lib"
   },
   "scripts": {
-    "start": "nodemon --exec ts-node src/index.ts",
+    "lint": "eslint .",
     "build": "tsc -build tsconfig.json",
+    "start": "nodemon --exec ts-node src/index.ts",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Nick Winner",
@@ -35,6 +36,11 @@
     "@types/mongoose": "^5.7.7",
     "@types/ssh2-sftp-client": "^4.1.3",
     "@types/ws": "^7.2.2",
+    "@typescript-eslint/eslint-plugin": "^3.6.0",
+    "@typescript-eslint/parser": "^3.6.0",
+    "eslint": "^7.2.0",
+    "eslint-config-airbnb-base": "^14.2.0",
+    "eslint-plugin-import": "^2.22.0",
     "husky": "^4.2.3",
     "nodemon": "^2.0.2",
     "prettier": "^2.0.2",
