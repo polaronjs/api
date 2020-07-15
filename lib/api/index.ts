@@ -33,9 +33,8 @@ app.use(cors({ origin: '*' }));
 // TODO add default prefix
 app.use(`/${process.env.API_PREFIX}`, router);
 
-// define Thrustr default welcome message
 router.get('/', (_, res) => {
-  res.send(`Welcome to the Thrustr API for ${process.env.SITE_NAME}!`);
+  res.send(`Welcome to the Polaron API for ${process.env.SITE_NAME}!`);
 });
 
 app.use('**', (req, res, next) => {

@@ -12,11 +12,11 @@ const colors = {
 ///////////////////////
 
 export const STARTING = () => {
-  console.log(colors.PRIMARY('Starting Thrustr...'));
+  console.log(colors.PRIMARY('Starting Polaron...'));
 };
 
 export const INJECTABLE_HYDRATED = (token: string) => {
-  if (process.env.THRUSTR_VERBOSE) {
+  if (process.env.POLARON_VERBOSE) {
     console.log(
       colors.PRIMARY('[Injectable Hydrated]: '),
       colors.SECONDARY(token)
@@ -25,7 +25,7 @@ export const INJECTABLE_HYDRATED = (token: string) => {
 };
 
 export const DATASOURCE_CONNECTED = (source: string) => {
-  if (process.env.THRUSTR_VERBOSE) {
+  if (process.env.POLARON_VERBOSE) {
     console.log(
       colors.PRIMARY('[Datasource Connection Established]: '),
       colors.SECONDARY(source)
@@ -34,7 +34,7 @@ export const DATASOURCE_CONNECTED = (source: string) => {
 };
 
 export const INTERFACE_AVAILABLE = (identifier: string, port?: string) => {
-  if (process.env.THRUSTR_VERBOSE) {
+  if (process.env.POLARON_VERBOSE) {
     console.log(
       colors.PRIMARY(
         `${identifier} Interface available` + (port ? ` on port ${port}` : '')

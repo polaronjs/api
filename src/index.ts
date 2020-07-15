@@ -1,4 +1,3 @@
-import thrustr from '../lib';
+import polaron, { Core } from '../lib';
 
-// start thrustr
-thrustr();
+polaron();

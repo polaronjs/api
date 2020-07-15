@@ -15,9 +15,6 @@ import { STARTING, READY } from './api/messages';
 export { Route } from './api/http/route';
 export { StatusCode } from './api/http/status';
 
-// export type of ThrustrCore, not actual class
-export { Core } from './api/core';
-
 // core config
 export const { config } = Injector.resolve(Core);
 
