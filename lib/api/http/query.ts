@@ -1,12 +1,12 @@
 import { Request, Response, NextFunction } from 'express';
 
-export interface PhantomQuery<T> {
-  query?: PhantomPropertyQuery<T>;
+export interface PolaronQuery<T> {
+  query?: PolaronPropertyQuery<T>;
   sorting?: { property: string; direction?: 1 | -1 };
   pagination?: { limit?: number; offset?: number };
 }
 
-export type PhantomPropertyQuery<T> = Partial<T> & { [key: string]: any };
+export type PolaronPropertyQuery<T> = Partial<T> & { [key: string]: any };
 
 export function Query() {
   return function (target, name, descriptor) {
@@ -23,7 +23,7 @@ export function Query() {
         if (expressBundle) {
           const { req } = expressBundle;
 
-          const formattedQuery: PhantomQuery<any> = {};
+          const formattedQuery: PolaronQuery<any> = {};
           const { offset, limit, sortBy, sortDirection, ...query } = req.query;
 
           // build formatted query

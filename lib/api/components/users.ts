@@ -4,7 +4,7 @@ import { Hasher } from '../services';
 // http
 import { Route, StatusCode, Params } from '../http';
 import { HttpMethod } from '../http/route';
-import { Query, PhantomQuery } from '../http/query';
+import { Query, PolaronQuery } from '../http/query';
 
 // entities
 import { UserRepository, User, AccessLevel } from '../data/entities/user';
@@ -48,7 +48,7 @@ export class UsersComponent {
   @Route({ method: HttpMethod.GET, route: '/users' })
   @Authorize({ minimumAccessLevel: AccessLevel.SUPER })
   @Query()
-  getUsers(query?: PhantomQuery<User>): Promise<User[]> {
+  getUsers(query?: PolaronQuery<User>): Promise<User[]> {
     return this.repo.find(query);
   }
 

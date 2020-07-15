@@ -16,7 +16,6 @@
   "license": "MIT",
   "dependencies": {
     "@phantomcms/injector": "^1.0.0-3",
-    "@typegoose/typegoose": "^6.4.0",
     "bcrypt": "^4.0.1",
     "body-parser": "^1.19.0",
     "chalk": "^3.0.0",
@@ -47,6 +46,9 @@
     "pretty-quick": "^2.0.1",
     "ts-node": "^8.6.2",
     "typescript": "^3.8.3"
+  },
+  "peerDependencies": {
+    "@typegoose/typegoose": "^6.4.0"
   },
   "nodemonConfig": {
     "ext": "ts"

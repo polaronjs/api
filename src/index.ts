@@ -1,3 +1,3 @@
-import polaron, { Core } from '../lib';
+import polaron from '../lib';
 
 polaron();

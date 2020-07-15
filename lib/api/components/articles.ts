@@ -4,7 +4,7 @@ import { ArticleRepository, Article } from '../data/entities/article';
 import { HttpMethod } from '../http/route';
 import { Authorize } from '../http/authorize';
 import { AccessLevel, User } from '../data/entities/user';
-import { Query, PhantomQuery } from '../http/query';
+import { Query, PolaronQuery } from '../http/query';
 
 @Injectable()
 export class ArticlesComponent {
@@ -29,7 +29,7 @@ export class ArticlesComponent {
 
   @Route({ method: HttpMethod.GET, route: '/articles' })
   @Query()
-  getArticles(query?: PhantomQuery<Article>): Promise<Article[]> {
+  getArticles(query?: PolaronQuery<Article>): Promise<Article[]> {
     return this.repo.find(query);
   }
 

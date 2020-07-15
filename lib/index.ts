@@ -15,8 +15,9 @@ import { STARTING, READY } from './api/messages';
 export { Route } from './api/http/route';
 export { Params } from './api/http/params';
 export { Authorize } from './api/http/authorize';
-export { Query } from './api/http/query';
+export { Query, PolaronQuery, PolaronPropertyQuery } from './api/http/query';
 export { StatusCode } from './api/http/status';
+export { Entity, CreateableEntity, Repository } from './api/data/entities';
 
 // core config
 export const { config } = Injector.resolve(Core);

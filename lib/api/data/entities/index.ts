@@ -6,7 +6,7 @@ import {
 } from '@typegoose/typegoose';
 import { User } from './user';
 import { Model } from '..';
-import { PhantomQuery } from '../../http/query';
+import { PolaronQuery } from '../../http/query';
 import { InternalError, NotFoundError } from '../../errors';
 
 export class Entity {
@@ -91,7 +91,7 @@ export abstract class Repository<T> {
     }
   }
 
-  find(options?: PhantomQuery<T>): Promise<T[]> {
+  find(options?: PolaronQuery<T>): Promise<T[]> {
     const { query, sorting, pagination } = options || {};
     let request = this.model.find(query);
 
