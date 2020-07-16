@@ -1,0 +1,17 @@
+version: '3.7'
+
+services:
+  mongodb:
+    image: mongo:4
+    ports:
+      - '27017:27017'
+
+  # connect with
+  # sftp -P 2222 polaron@0.0.0.0
+  #
+  # password = pass
+  SFTP:
+    image: atmoz/sftp
+    ports:
+      - '2222:22'
+    command: polaron:pass:1001
