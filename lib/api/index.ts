@@ -58,9 +58,10 @@ app.use((err, req, res, next) => {
 
 // exports
 export const start = (callback?: () => void) => {
-  // TODO add default port
-  app.listen(process.env.PORT, () => {
-    INTERFACE_AVAILABLE('HTTP', process.env.PORT);
+  const port = process.env.PORT || '3000';
+
+  app.listen(port, () => {
+    INTERFACE_AVAILABLE('HTTP', port);
 
     if (callback) {
       callback();
