@@ -65,7 +65,7 @@ export class SFTPUploadDestination extends UploadDestination {
 
     let testingPath = '/';
     while (segments.length) {
-      testingPath += segments.splice(0, 1)[0] + '/';
+      testingPath += segments.shift() + '/';
 
       if (!testingPath) {
         continue;

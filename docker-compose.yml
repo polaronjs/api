@@ -12,6 +12,8 @@ services:
   # password = pass
   SFTP:
     image: atmoz/sftp
+    volumes:
+      - ./upload:/home/polaron/upload
     ports:
       - '2222:22'
     command: polaron:pass:1001

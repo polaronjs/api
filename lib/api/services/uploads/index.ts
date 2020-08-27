@@ -14,10 +14,7 @@ export interface Upload {
 }
 
 export class InFlightUpload {
-  private totalExpectedParts: number;
-  private nextExpectedPart = 0;
-  private queue: Map<number, Upload> = new Map();
-
+  private totalExpectedParts!: number;
   private fileName: string;
   private fileStream = new PassThrough();
 
@@ -27,6 +24,22 @@ export class InFlightUpload {
 
     this.fileStream._read = () => {};
 
+    this.fileStream.on('end', () => {
+      console.log('stream is done for ' + this.fileName);
+    });
+    this.fileStream.on('pause', (event) => {
+      console.log('stream is paused for ' + this.fileName, event);
+    });
+    this.fileStream.on('resume', () => {
+      console.log('stream is resumed for ' + this.fileName);
+    });
+    this.fileStream.on('finish', () => {
+      console.log('stream is finished for ' + this.fileName);
+    });
+    this.fileStream.on('close', () => {
+      console.log('stream is clothes for ' + this.fileName);
+    });
+
     this.fileName = doc.name;
     this.totalExpectedParts = doc.totalExpectedParts;
 
@@ -35,38 +48,20 @@ export class InFlightUpload {
     this.addPart(doc);
   }
 
-  get partsUpload() {
-    return this.nextExpectedPart;
+  addPart(doc: Upload) {
+    return this.appendToStream(doc).then(() => {});
   }
 
-  get partsRemaining() {
-    return this.totalExpectedParts - this.partsUpload;
-  }
-
-  async addPart(doc: Upload) {
-    this.queue.set(doc.part, doc);
-    this.processQueue();
-  }
-
-  private async processQueue(): Promise<void> {
-    // check for next part in queue
-    if (this.queue.has(this.nextExpectedPart)) {
-      // next part exists in queue, append it to file
-      this.appendToStream(this.queue.get(this.nextExpectedPart++));
-
-      if (this.nextExpectedPart < this.totalExpectedParts) {
-        this.processQueue();
-      } else {
-        console.log('Done uploading', this.fileName);
-      }
-    }
-
-    // above check is not guaranteed. if the part doesn't exist in the queue,
-    // this function will be a no-op as the next expected part hasn't yet arrived
-  }
-
-  private appendToStream(doc: Upload) {
-    this.fileStream.push(doc.data);
+  private async appendToStream(doc: Upload) {
+    return new Promise((resolve, reject) => {
+      this.fileStream.once('pause', () => {
+        if (doc.part === this.totalExpectedParts) {
+          this.fileStream.end();
+        }
+        resolve();
+      });
+      this.fileStream.push(doc.data);
+    });
   }
 }
 
@@ -78,9 +73,11 @@ export class Uploader {
 
   upload(doc: Upload) {
     if (this.inFlight.has(doc.fileId)) {
-      this.inFlight.get(doc.fileId).addPart(doc);
+      return this.inFlight.get(doc.fileId).addPart(doc);
     } else {
-      this.inFlight.set(doc.fileId, new InFlightUpload(doc, this.dest));
+      const upload = new InFlightUpload(doc, this.dest);
+      this.inFlight.set(doc.fileId, upload);
+      return upload.addPart(doc);
     }
   }
 }
