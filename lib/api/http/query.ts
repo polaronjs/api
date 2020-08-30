@@ -6,7 +6,11 @@ export interface PolaronQuery<T> {
   pagination?: { limit?: number; offset?: number };
 }
 
-export type PolaronPropertyQuery<T> = Partial<T> & { [key: string]: any };
+export type PolaronPropertyQuery<T> = Partial<T> & {
+  search?: string;
+  regex?: string[];
+  [key: string]: any;
+};
 
 export function Query() {
   return function (target, name, descriptor) {

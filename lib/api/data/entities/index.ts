@@ -6,7 +6,7 @@ import {
 } from '@typegoose/typegoose';
 import { User } from './user';
 import { Model } from '..';
-import { PolaronQuery } from '../../http/query';
+import { PolaronQuery, PolaronPropertyQuery } from '../../http/query';
 import { InternalError, NotFoundError } from '../../errors';
 
 export class Entity {
@@ -25,7 +25,7 @@ export class Entity {
 
     // for all other properties, set them on the entity
     for (let [key, value] of Object.entries(data)) {
-      if (typeof value['__v'] !== 'undefined') {
+      if (value && typeof value['__v'] !== 'undefined') {
         // recursively convert child entities
         value = Entity.from(value);
       }
@@ -93,17 +93,40 @@ export abstract class Repository<T> {
 
   find(options?: PolaronQuery<T>): Promise<T[]> {
     const { query, sorting, pagination } = options || {};
-    let request = this.model.find(query);
+
+    let request: ReturnType<Model<T>['find']>;
 
     if (
       query &&
-      Object.keys(query).length === 1 &&
+      Object.keys(query).length <= 2 &&
       query.hasOwnProperty('search')
     ) {
-      // @ts-ignore TODO investigate/raise issue with Typegoose about typings here
-      request = this.model.find({
-        $text: { $search: '"' + query.search + '"', $caseSensitive: false },
-      });
+      // TODO investigate/raise issue with Typegoose about typings here
+      if (query.regex) {
+        // @ts-ignore
+        request = this.model.find(
+          Object.assign(
+            {},
+
+            ...(Array.isArray(query.regex)
+              ? query.regex
+              : [query.regex]
+            ).map((x) => ({ [x]: { $regex: query.search } }))
+          )
+        );
+      } else {
+        // @ts-ignore
+        request = this.model.find({
+          $text: { $search: '"' + query.search + '"', $caseSensitive: false },
+        });
+      }
+    } else {
+      delete query.search;
+      delete query.regex;
+      // @ts-ignore
+      request = this.model.find(
+        query as Exclude<PolaronPropertyQuery<T>, 'search' | 'regex'>
+      );
     }
 
     if (pagination) {
@@ -122,7 +145,7 @@ export abstract class Repository<T> {
 
     return request
       .populate('createdBy')
-      .populate('updatedBy')
+      .populate('lastUpdatedBy')
       .lean<T>()
       .exec()
       .then((values) => {
@@ -148,6 +171,8 @@ export abstract class Repository<T> {
   delete(id: string): Promise<T> {
     return this.model
       .findByIdAndDelete(id)
+      .populate('createdBy')
+      .populate('lastUpdatedBy')
       .lean<T>()
       .exec()
       .then((value) => {

@@ -13,6 +13,9 @@ export class Article extends CreateableEntity {
 
   @prop({ required: true, ref: Category })
   cagegory: Ref<Category>;
+
+  @prop({ required: true })
+  date: Date;
 }
 
 @Injectable()
